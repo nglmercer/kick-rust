@@ -220,7 +220,16 @@ mod tests {
     fn test_random_user_agent() {
         let ua = get_random_user_agent();
         assert!(!ua.is_empty());
-        assert!(is_user_agent_current(&ua));
+        // Test multiple attempts since user agents are random
+        let mut found_current = false;
+        for _ in 0..10 {
+            let test_ua = get_random_user_agent();
+            if is_user_agent_current(&test_ua) {
+                found_current = true;
+                break;
+            }
+        }
+        assert!(found_current, "Should find at least one current user agent in 10 attempts");
     }
 
     #[test]

@@ -215,7 +215,8 @@ pub struct RawChatMessageData {
     #[serde(rename = "created_at")]
     pub created_at: String,
     pub sender: KickUser,
-    pub chatroom: KickChatroom,
+    #[serde(rename = "chatroom_id")]
+    pub chatroom_id: u64,
 }
 
 /// Raw message deleted data

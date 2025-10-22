@@ -7,9 +7,11 @@ use kick_rust::KickClient;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = KickClient::new();
-
+    // client.on_raw_message(|data| {
+    //     println!("{:#?}",data);
+    // }).await;
     client.on_chat_message(|data| {
-        println!("{:#?}: {}",data,data.content);
+        println!("{:#?}: {}",data.sender.username,data.content);
     }).await;
 
     client.on_ready(|()| {

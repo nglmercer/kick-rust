@@ -1,6 +1,7 @@
 //! Message parser for processing Kick.com WebSocket events
 
 use crate::types::*;
+use tracing::debug;
 use regex::Regex;
 use std::collections::HashMap;
 
@@ -13,13 +14,16 @@ impl MessageParser {
         match data {
             serde_json::Value::String(s) => {
                 // Data is a string containing JSON - parse it
+                debug!("Extracting data from JSON string: {}", s);
                 serde_json::from_str(&s).map_err(|e| KickError::InvalidMessage(format!("Failed to parse JSON string: {}", e)))
             }
             serde_json::Value::Object(_) => {
                 // Data is already a JSON object - parse it directly
+                debug!("Extracting data from JSON object");
                 serde_json::from_value(data).map_err(|e| KickError::InvalidMessage(format!("Failed to parse JSON object: {}", e)))
             }
             _ => {
+                debug!("Data is neither a string nor an object: {:?}", data);
                 Err(KickError::InvalidMessage("Data is neither a string nor an object".to_string()))
             }
         }
@@ -128,7 +132,11 @@ impl MessageParser {
             message_type: data.message_type,
             created_at: data.created_at,
             sender: data.sender,
-            chatroom: data.chatroom,
+            chatroom: KickChatroom {
+                id: data.chatroom_id,
+                channel_id: data.chatroom_id,
+                name: String::new(), // Empty name since it's not provided
+            },
         }
     }
 
